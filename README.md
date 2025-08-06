@@ -90,14 +90,36 @@ python -m qilbee_os.main
 
 Detailed technical specifications are available in the `docs/` directory:
 
-- [System Architecture](docs/section-1-architecture.md)
-- [Task Queuing System](docs/section-2-task-queuing.md)
-- [Inter-Agent Communication](docs/section-3-iac-protocol.md)
-- [Conversational Core](docs/section-4-conversational.md)
-- [Security Sandbox](docs/section-5-security.md)
-- [Security Model](docs/section-6-security-model.md)
-- [User Interface](docs/section-7-ui.md)
-- [Deployment Guide](docs/section-8-deployment.md)
+- **[Section 1: System Architecture](docs/section-1-architecture.md)** - Core principles, component overview, and technology stack
+- **[Section 2: Task Queuing System](docs/section-2-task-queuing.md)** - Celery/RabbitMQ distributed processing and swarm mode
+- **[Section 3: Inter-Agent Communication](docs/section-3-iac-protocol.md)** - gRPC/REST hybrid protocol and ACP compliance
+- **[Section 4: Conversational Core](docs/section-4-conversational.md)** - Claude Sonnet 4 integration and tool plugin architecture
+- **[Section 5: Security Sandbox](docs/section-5-security.md)** - nsjail process isolation and GUI automation security
+- **[Section 6: Security Model](docs/section-6-security-model.md)** - OAuth 2.0, TLS 1.3, and comprehensive RBAC system
+- **[Section 7: User Interface](docs/section-7-ui.md)** - Textual-based TUI with real-time monitoring
+- **[Section 8: Deployment](docs/section-8-deployment.md)** - Docker containerization and Kubernetes orchestration
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Qilbee OS Architecture                   │
+├─────────────────────────────────────────────────────────────────┤
+│  Terminal UI (Textual)          Web Interface (noVNC)          │
+├─────────────────────────────────────────────────────────────────┤
+│                    Agent Orchestrator                          │
+│              (Claude Sonnet 4 Integration)                     │
+├─────────┬─────────────────────────────────┬─────────────────────┤
+│ Task    │     Tool Execution Engine       │  Inter-Agent        │
+│Scheduler│     (nsjail Sandbox)           │  Communication      │
+│(Celery) │                                 │  (gRPC/REST)        │
+├─────────┼─────────────────────────────────┼─────────────────────┤
+│         │        Security Layer          │                     │
+│         │  (OAuth 2.0, TLS 1.3, RBAC)    │                     │
+├─────────┴─────────────────────────────────┴─────────────────────┤
+│    Message Broker (RabbitMQ)    Result Backend (Redis)         │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ## Contributing
 
