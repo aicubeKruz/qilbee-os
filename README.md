@@ -105,19 +105,19 @@ Detailed technical specifications are available in the `docs/` directory:
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Qilbee OS Architecture                   │
 ├─────────────────────────────────────────────────────────────────┤
-│  Terminal UI (Textual)          Web Interface (noVNC)          │
+│  Terminal UI (Textual)          Web Interface (noVNC)           │
 ├─────────────────────────────────────────────────────────────────┤
-│                    Agent Orchestrator                          │
-│              (Claude Sonnet 4 Integration)                     │
+│                    Agent Orchestrator                           │
+│                       (LLM LAYER)                               │
 ├─────────┬─────────────────────────────────┬─────────────────────┤
 │ Task    │     Tool Execution Engine       │  Inter-Agent        │
-│Scheduler│     (nsjail Sandbox)           │  Communication      │
+│Scheduler│     (nsjail Sandbox)            │  Communication      │
 │(Celery) │                                 │  (gRPC/REST)        │
 ├─────────┼─────────────────────────────────┼─────────────────────┤
-│         │        Security Layer          │                     │
-│         │  (OAuth 2.0, TLS 1.3, RBAC)    │                     │
+│         │        Security Layer           │                     │
+│         │  (OAuth 2.0, TLS 1.3, RBAC)     │                     │
 ├─────────┴─────────────────────────────────┴─────────────────────┤
-│    Message Broker (RabbitMQ)    Result Backend (Redis)         │
+│    Message Broker (RabbitMQ)    Result Backend (Redis)          │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
