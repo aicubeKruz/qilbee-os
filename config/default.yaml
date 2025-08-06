@@ -1,0 +1,225 @@
+# Default configuration for Qilbee OS
+# This file contains default settings - override in local.yaml or production.yaml
+
+# Server configuration
+server:
+  host: "0.0.0.0"
+  port: 8080
+  debug: false
+  workers: 4
+
+# Agent Orchestrator settings
+agent:
+  instance_id: "qilbee_instance_001"
+  name: "Qilbee Agent"
+  description: "Conversational AI Agent"
+  max_conversation_history: 100
+  default_timeout: 300
+
+# Anthropic Claude configuration
+anthropic:
+  api_key: "${ANTHROPIC_API_KEY}"  # Set via environment variable
+  model: "claude-sonnet-4-20250514"
+  max_tokens: 4096
+  temperature: 0.1
+  beta_headers:
+    - "computer-use-2025-01-24"
+
+# Celery task queue configuration
+celery:
+  broker_url: "amqp://guest:guest@localhost:5672//"
+  result_backend: "redis://localhost:6379/0"
+  task_serializer: "json"
+  result_serializer: "json"
+  accept_content: ["json"]
+  timezone: "UTC"
+  enable_utc: true
+  task_compression: "zlib"
+  result_compression: "zlib"
+  task_acks_late: true
+  worker_prefetch_multiplier: 1
+  worker_max_tasks_per_child: 1000
+  
+  # Queue configuration
+  task_routes:
+    "qilbee_os.tasks.execute_tool": {"queue": "tools"}
+    "qilbee_os.tasks.gui_automation": {"queue": "gui"}
+    "qilbee_os.tasks.system_command": {"queue": "system"}
+
+# RabbitMQ configuration
+rabbitmq:
+  host: "localhost"
+  port: 5672
+  username: "guest"
+  password: "guest"
+  virtual_host: "/"
+  ssl_enabled: false
+  ssl_cert_path: ""
+  ssl_key_path: ""
+  ssl_ca_path: ""
+
+# Redis configuration
+redis:
+  host: "localhost"
+  port: 6379
+  password: ""
+  db: 0
+  ssl_enabled: false
+  ssl_cert_path: ""
+  ssl_key_path: ""
+  ssl_ca_path: ""
+
+# Security configuration
+security:
+  tls_enabled: true
+  tls_cert_path: "/etc/qilbee/tls/server.crt"
+  tls_key_path: "/etc/qilbee/tls/server.key"
+  ca_cert_path: "/etc/qilbee/tls/ca.crt"
+  
+  # OAuth 2.0 settings
+  oauth:
+    enabled: true
+    issuer: "https://auth.qilbee-os.local"
+    private_key_path: "/etc/qilbee/oauth/private_key.pem"
+    token_expiry: 3600  # 1 hour
+    
+  # JWT configuration
+  jwt:
+    algorithm: "RS256"
+    audience: "qilbee-os"
+    
+  # Rate limiting
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 60
+    burst_size: 10
+
+# Sandbox configuration
+sandbox:
+  enabled: true
+  engine: "nsjail"
+  default_timeout: 30
+  default_memory_limit: 256  # MB
+  default_cpu_limit: 1.0
+  max_file_size: 16  # MB
+  
+  # nsjail configuration
+  nsjail:
+    config_path: "/etc/qilbee/nsjail-default.cfg"
+    chroot_dir: "/tmp/qilbee-chroot"
+    enable_networking: false
+    enable_x11: false
+    
+  # Allowed capabilities for tools
+  allowed_capabilities:
+    - "filesystem_read"
+    - "filesystem_write"
+    - "network_access" 
+    - "system_command"
+    - "gui_automation"
+
+# GUI automation configuration
+gui_automation:
+  enabled: false  # Disabled by default for security
+  display_server: "auto"  # auto, x11, wayland
+  screen_resolution: "1024x768"
+  enable_screenshots: true
+  screenshot_quality: 85
+  
+  # Security settings
+  require_confirmation: true
+  log_all_actions: true
+  allowed_applications: []  # Empty = all allowed
+
+# Tool plugin configuration
+tools:
+  discovery_enabled: true
+  entry_point_group: "qilbee.tools"
+  plugin_directories:
+    - "/usr/local/lib/qilbee/plugins"
+    - "/etc/qilbee/plugins"
+  
+  # Built-in tools
+  builtin_tools:
+    computer: true
+    text_editor: true  
+    bash: true
+    qube_api: false  # Requires API key
+
+# Inter-Agent Communication (IAC)
+iac:
+  enabled: true
+  
+  # gRPC internal communication
+  grpc:
+    port: 50051
+    max_message_size: 4194304  # 4MB
+    keepalive_time: 30
+    keepalive_timeout: 5
+    max_connection_idle: 300
+    
+  # ACP external communication
+  acp:
+    enabled: true
+    base_path: "/v1"
+    max_request_size: 10485760  # 10MB
+    
+  # Event streaming
+  events:
+    enabled: true
+    exchange_name: "qilbee.events"
+    exchange_type: "fanout"
+    
+# Monitoring and logging
+monitoring:
+  enabled: true
+  metrics_port: 9090
+  health_check_port: 8081
+  
+  # Prometheus metrics
+  prometheus:
+    enabled: true
+    endpoint: "/metrics"
+    
+  # Application logging
+  logging:
+    level: "INFO"
+    format: "json"
+    file_path: "/var/log/qilbee/app.log"
+    max_file_size: "100MB"
+    backup_count: 5
+    
+  # Audit logging
+  audit:
+    enabled: true
+    file_path: "/var/log/qilbee/audit.log"
+    max_file_size: "100MB"
+    backup_count: 10
+
+# Database configuration (optional)
+database:
+  enabled: false
+  type: "postgresql"
+  host: "localhost"
+  port: 5432
+  name: "qilbee_os"
+  username: "qilbee"
+  password: "${DATABASE_PASSWORD}"
+  ssl_mode: "require"
+  pool_size: 10
+  max_overflow: 5
+
+# Development settings
+development:
+  reload: false
+  debug_toolbar: false
+  mock_llm: false
+  mock_tools: false
+  
+# Feature flags
+features:
+  swarm_mode: true
+  gui_automation: false
+  web_interface: true
+  api_versioning: true
+  experimental_tools: false
